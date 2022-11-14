@@ -1,4 +1,5 @@
 # SnakeGame
+This is a side project that reproduce the [Snack](https://en.wikipedia.org/wiki/Snake_(video_game_genre)).
 
-https://user-images.githubusercontent.com/17349191/200924973-b2691731-45ca-4c19-841c-f669adecd7da.MP4
-
+## DEMO
+https://user-images.githubusercontent.com/17349191/201578910-a3d8ed87-8a0f-4e2a-ab14-fba540d4be7b.MP4
