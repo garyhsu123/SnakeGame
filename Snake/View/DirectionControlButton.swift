@@ -28,11 +28,8 @@ class DirectionControlButton: UIButton {
             return self.bounds.width / 236.7
         }
     }
-    var rightBtn: CAShapeLayer!
-    var leftBtn: CAShapeLayer!
-    var topBtn: CAShapeLayer!
-    var downBtn: CAShapeLayer!
     
+    var directionControls: [DirectionControlViewModel] = []
 //    let leftButton: UIButton = {
 //        var view = UIButton(type: .custom)
 //        view.setImage(UIImage(named: "LeftBtn"), for: .normal)
@@ -108,7 +105,6 @@ class DirectionControlButton: UIButton {
         trianglePath.apply(transform)
         triangleShapeLayer.path = trianglePath.cgPath
         triangleShapeLayer.fillColor = #colorLiteral(red: 0.9529411765, green: 0.9529411765, blue: 0.9529411765, alpha: 1)
-//        triangleShapeLayer.name = "right"
         return triangleShapeLayer
     }
     
@@ -135,7 +131,8 @@ class DirectionControlButton: UIButton {
         let triangleShaperLayer = triangleShapeLayer()
         triangleShaperLayer.setAffineTransform(CGAffineTransformTranslate(.identity, 30 * sqrt(2) * SCALE , -30 * sqrt(2) * SCALE))
         buttonShapeLayer.addSublayer(triangleShaperLayer)
-        
+        buttonShapeLayer.shadowColor = UIColor.red.cgColor
+        buttonShapeLayer.shadowRadius = 10.0
         return buttonShapeLayer
     }
     
@@ -145,44 +142,53 @@ class DirectionControlButton: UIButton {
         self.isMultipleTouchEnabled = true
         
         let center = CGPoint(x: self.bounds.midX, y: self.bounds.midY)
-        rightBtn = buttonShapeLayer()
+        
+        let rightBtn = buttonShapeLayer()
         rightBtn.fillColor = #colorLiteral(red: 1, green: 0.8474411368, blue: 0.4372619987, alpha: 1)
-        rightBtn.name = "right"
-        var transform: CGAffineTransform = .identity
-        transform = transform.translatedBy(x: center.x, y: center.y)
-        transform = transform.rotated(by: Double.pi  / 4)
-        transform = transform.translatedBy(x: -center.x, y: -center.y)
-        rightBtn.setAffineTransform(transform)
+        
+        var rightBtnAffineTransform: CGAffineTransform = .identity
+        rightBtnAffineTransform = rightBtnAffineTransform.translatedBy(x: center.x, y: center.y)
+        rightBtnAffineTransform = rightBtnAffineTransform.rotated(by: Double.pi  / 4)
+        rightBtnAffineTransform = rightBtnAffineTransform.translatedBy(x: -center.x, y: -center.y)
+        rightBtn.setAffineTransform(rightBtnAffineTransform)
+        
+        directionControls.append(DirectionControlViewModel(layer: rightBtn, moveDirection: .right))
         layer.addSublayer(rightBtn)
         
-        topBtn = buttonShapeLayer()
+        let topBtn = buttonShapeLayer()
         topBtn.fillColor = #colorLiteral(red: 1, green: 0.8474411368, blue: 0.4372619987, alpha: 1)
-        topBtn.name = "top"
-        transform = .identity
-        transform = transform.translatedBy(x: center.x, y: center.y)
-        transform = transform.rotated(by: -Double.pi  / 4)
-        transform = transform.translatedBy(x: -center.x, y: -center.y)
-        topBtn.setAffineTransform(transform)
+
+        var topBtnAffineTransform: CGAffineTransform = .identity
+        topBtnAffineTransform = topBtnAffineTransform.translatedBy(x: center.x, y: center.y)
+        topBtnAffineTransform = topBtnAffineTransform.rotated(by: -Double.pi  / 4)
+        topBtnAffineTransform = topBtnAffineTransform.translatedBy(x: -center.x, y: -center.y)
+        topBtn.setAffineTransform(topBtnAffineTransform)
+
+        directionControls.append(DirectionControlViewModel(layer: topBtn, moveDirection: .top))
         layer.addSublayer(topBtn)
 
-        downBtn = buttonShapeLayer()
+        let downBtn = buttonShapeLayer()
         downBtn.fillColor = #colorLiteral(red: 1, green: 0.8474411368, blue: 0.4372619987, alpha: 1)
-        downBtn.name = "down"
-        transform = .identity
-        transform = transform.translatedBy(x: center.x, y: center.y)
-        transform = transform.rotated(by: 3 * Double.pi  / 4)
-        transform = transform.translatedBy(x: -center.x, y: -center.y)
-        downBtn.setAffineTransform(transform)
+
+        var downBtnAffineTransform: CGAffineTransform = .identity
+        downBtnAffineTransform = downBtnAffineTransform.translatedBy(x: center.x, y: center.y)
+        downBtnAffineTransform = downBtnAffineTransform.rotated(by: 3 * Double.pi  / 4)
+        downBtnAffineTransform = downBtnAffineTransform.translatedBy(x: -center.x, y: -center.y)
+        downBtn.setAffineTransform(downBtnAffineTransform)
+
+        directionControls.append(DirectionControlViewModel(layer: downBtn, moveDirection: .down))
         layer.addSublayer(downBtn)
 
-        leftBtn = buttonShapeLayer()
+        let leftBtn = buttonShapeLayer()
         leftBtn.fillColor = #colorLiteral(red: 1, green: 0.8474411368, blue: 0.4372619987, alpha: 1)
-        leftBtn.name = "left"
-        transform = .identity
-        transform = transform.translatedBy(x: center.x, y: center.y)
-        transform = transform.rotated(by: -3 * Double.pi  / 4)
-        transform = transform.translatedBy(x: -center.x, y: -center.y)
-        leftBtn.setAffineTransform(transform)
+
+        var leftBtnAffineTransform: CGAffineTransform = .identity
+        leftBtnAffineTransform = leftBtnAffineTransform.translatedBy(x: center.x, y: center.y)
+        leftBtnAffineTransform = leftBtnAffineTransform.rotated(by: -3 * Double.pi  / 4)
+        leftBtnAffineTransform = leftBtnAffineTransform.translatedBy(x: -center.x, y: -center.y)
+        leftBtn.setAffineTransform(leftBtnAffineTransform)
+
+        directionControls.append(DirectionControlViewModel(layer: leftBtn, moveDirection: .left))
         layer.addSublayer(leftBtn)
     }
     
@@ -204,11 +210,31 @@ class DirectionControlButton: UIButton {
             return
         }
         let location = touch.location(in: self)
-        for btn in [rightBtn, topBtn, leftBtn, downBtn] {
-            if let hit = btn?.path?.contains(location, transform: CGAffineTransformInvert((btn?.affineTransform())!)), hit, let direction = btn?.name, let moveDirection = MoveDirection(rawValue: direction) {
+        for btn in directionControls {
+            if let hit = btn.layer.path?.contains(location, transform: CGAffineTransformInvert(btn.baseAffineTransform)), hit {
+                var transform = btn.baseAffineTransform
+                transform = CGAffineTransformTranslate(transform, self.bounds.midX, self.bounds.midY)
+                transform = CGAffineTransformScale(transform, 0.95, 0.95)
+                transform = CGAffineTransformTranslate(transform, -self.bounds.midX, -self.bounds.midY)
+                btn.layer.setAffineTransform(transform)
+                btn.layer.fillColor = #colorLiteral(red: 1, green: 0.9062994086, blue: 0.6543702384, alpha: 1)
                 feedbackGenerator.impactOccurred()
-                delegate?.didTapDirection(direction: moveDirection)
-                
+                delegate?.didTapDirection(direction: btn.moveDirection)
+            }
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        guard let touch = touches.first else {
+            return
+        }
+        let location = touch.location(in: self)
+        for btn in directionControls {
+            if let hit = btn.layer.path?.contains(location, transform: CGAffineTransformInvert(btn.baseAffineTransform)), hit {
+                let transform: CATransform3D = CATransform3DMakeAffineTransform((btn.baseAffineTransform))
+                btn.layer.transform = transform
+                btn.layer.fillColor = #colorLiteral(red: 1, green: 0.8474411368, blue: 0.4372619987, alpha: 1)
             }
         }
     }
